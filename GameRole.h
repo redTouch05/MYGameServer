@@ -15,6 +15,11 @@ class GameRole :
     std::string szName;
 
     GameMsg* CreateIDNameLogin();
+    GameMsg* CreateSrdPlayers();
+    GameMsg* CreateSelfPosition();
+    GameMsg* CreateIDNameLogoff();
+
+
 
 public:
     GameRole();

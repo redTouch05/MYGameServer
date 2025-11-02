@@ -13,6 +13,11 @@ GameProtocol::GameProtocol()
 
 GameProtocol::~GameProtocol()
 {
+	if (NULL != m_role)
+	{
+		ZinxKernel::Zinx_Del_Role(*m_role);
+		delete m_role;
+	}
 }
 
 /*输入参数是通道传来的原始报文
