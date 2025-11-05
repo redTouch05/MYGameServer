@@ -1,6 +1,7 @@
 #pragma once
 #include<zinx.h>
 #include"AOIWorld.h"
+#include"msg.pb.h"
 class GameProtocol;
 class GameMsg;
 class GameRole :
@@ -18,8 +19,8 @@ class GameRole :
     GameMsg* CreateSrdPlayers();
     GameMsg* CreateSelfPosition();
     GameMsg* CreateIDNameLogoff();
-
-
+    GameMsg* CreateTalkBroadCast(std::string _content);
+    GameMsg* CreateNewPositionBroadCast(pb::Position* NewPos);
 
 public:
     GameRole();

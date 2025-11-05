@@ -6,9 +6,6 @@
 //创建游戏世界全局对象
 static AOIWorld world(0, 400, 0, 400, 20, 20);
 
-
-
-
 GameMsg* GameRole::CreateIDNameLogin()
 {
 	pb::SyncPid* pmsg = new pb::SyncPid();
@@ -68,6 +65,33 @@ GameMsg* GameRole::CreateIDNameLogoff()
 
 }
 
+GameMsg* GameRole::CreateTalkBroadCast(std::string _content)
+{
+	pb::BroadCast* pmsg = new pb::BroadCast();
+	pmsg->set_pid(iPid);
+	pmsg->set_username(szName);
+	pmsg->set_tp(1);//表示聊天信息
+	pmsg->set_content(_content);
+	GameMsg* pRet = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, pmsg);
+	return pRet;
+}
+
+GameMsg* GameRole::CreateNewPositionBroadCast(pb::Position* NewPos)
+{
+	//组建待发送的报文
+	pb::BroadCast* pMsg = new pb::BroadCast();
+	auto pPos = pMsg->mutable_p();
+	pPos->set_x(NewPos->x());
+	pPos->set_y(NewPos->y());
+	pPos->set_z(NewPos->z());
+	pPos->set_v(NewPos->v());
+	pMsg->set_pid(iPid);
+	pMsg->set_tp(4);
+	pMsg->set_username(szName);
+	GameMsg* msg = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, pMsg);
+	return msg;
+}
+
 GameRole::GameRole()
 {
 	//设置玩家的初始坐标
@@ -99,12 +123,12 @@ bool GameRole::Init()
 		auto srd_list = world.GetSrdPlayers(this);
 		for (auto single : srd_list)
 		{
+
 			auto pmsg = CreateSelfPosition();
 			auto pRole = dynamic_cast<GameRole*>(single);
 			ZinxKernel::Zinx_SendOut(*pmsg, *(pRole->m_protocol));
 
 		}
-
 
 	}
 
@@ -118,7 +142,50 @@ UserData* GameRole::ProcMsg(UserData& _poUserData)
 	{
 		std::cout << "type is " << single->enMsgType << std::endl;
 		std::cout << single->pMsg->Utf8DebugString() << std::endl;
+		//判断消息类型是不是聊天类型消息
+		if (single->enMsgType == GameMsg::MSG_TYPE_CHAT_CONTENT)
+		{
+			//取出聊天消息
+			auto content = dynamic_cast<pb::Talk*>(single->pMsg)->content();
+			//发给所有人
+			auto roleList = ZinxKernel::Zinx_GetAllRole();
+			for (auto pRole : roleList)
+			{
+				auto pGameRole = dynamic_cast<GameRole*>(pRole);
+				auto pMsg = CreateTalkBroadCast(content);
+				ZinxKernel::Zinx_SendOut(*pMsg, *pGameRole->m_protocol);
+			}
+		}
+		//判断消息类型是不是玩家新位置类型
+		if (single->enMsgType == GameMsg::MSG_TYPE_NEW_POSTION)
+		{
+			//跨网格处理
 
+
+			//取出新位置*/
+			auto NewPos = dynamic_cast<pb::Position*>(single->pMsg);
+			//获取周围玩家
+			auto srd_list = world.GetSrdPlayers(this);
+			//广播新位置给周围玩家
+			for (auto single : srd_list)
+			{
+				////组建待发送的报文
+				//pb::BroadCast* pMsg = new pb::BroadCast();
+				//auto pPos = pMsg->mutable_p();
+				//pPos->set_x(NewPos->x());
+				//pPos->set_y(NewPos->y());
+				//pPos->set_z(NewPos->z());
+				//pPos->set_v(NewPos->v());
+				//pMsg->set_pid(iPid);
+				//pMsg->set_tp(4);
+				//pMsg->set_username(szName);
+				GameRole* pRole = dynamic_cast<GameRole*>(single);
+				//发送新位置给周围玩家
+				/*GameMsg* msg = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, pMsg);*/
+				auto pMsg = CreateNewPositionBroadCast(NewPos);
+				ZinxKernel::Zinx_SendOut(*pMsg, *pRole->m_protocol);
+			}
+		}
 	}
 	return nullptr;
 }
