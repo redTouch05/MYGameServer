@@ -2,6 +2,7 @@
 #include<zinx.h>
 #include"AOIWorld.h"
 #include"msg.pb.h"
+#include"ZinxTimer.h"
 class GameProtocol;
 class GameMsg;
 class GameRole :
@@ -21,7 +22,15 @@ class GameRole :
     GameMsg* CreateIDNameLogoff();
     GameMsg* CreateTalkBroadCast(std::string _content);
     GameMsg* CreateNewPositionBroadCast(pb::Position* NewPos);
+    //处理聊天文本信息
+    void ProcTalkMsg(std::string _content);
 
+    //处理玩家移动的信息
+    void ProcMoveMsg(float _x, float _y, float _z, float _v);
+    //视野出现
+    void ViewAppear(GameRole* _pRole);
+    //视野消失
+    void ViewLost(GameRole* _pRole);
 public:
     GameRole();
    
@@ -31,9 +40,6 @@ public:
     bool Init() override;
     UserData* ProcMsg(UserData& _poUserData) override;
     void Fini() override;
-
-    
-
 
     // 通过 Player 继承
     int GetX() override;
