@@ -3,6 +3,7 @@
 #include"AOIWorld.h"
 #include"msg.pb.h"
 #include"ZinxTimer.h"
+#include"RandomName.h"
 class GameProtocol;
 class GameMsg;
 class GameRole :
@@ -33,7 +34,7 @@ class GameRole :
     void ViewLost(GameRole* _pRole);
 public:
     GameRole();
-   
+    ~GameRole();
 
     GameProtocol* m_protocol = NULL;
     // Í¨¹ý Irole ¼Ì³Ð
@@ -45,6 +46,8 @@ public:
     int GetX() override;
 
     int GetY() override;
+
+ 
 
 };
 

@@ -6,6 +6,8 @@
 #include<list>
 #include <random>  // 包含 default_random_engine 和分布类型
 #include <ctime>
+//创建全局随机姓名对象
+RandomName random_name;
 //创建游戏世界全局对象
 static AOIWorld world(0, 400, 0, 400, 20, 20);
 
@@ -208,7 +210,7 @@ static uniform_int_distribution<int> dis_int(0, 50);
 GameRole::GameRole()
 {
 	//初始化玩家姓名
-	szName = "tudou0921";
+	szName = random_name.GetName();
 	//设置玩家的初始坐标
 	x = 100 + dis_int(gen);
 	z = 100 + dis_int(gen);
@@ -325,5 +327,8 @@ int GameRole::GetY()
 }
 
 
-
+GameRole::~GameRole()
+{
+	random_name.ReleaseName(szName);
+}
 

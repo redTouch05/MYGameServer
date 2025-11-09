@@ -3,6 +3,7 @@
 #include "msg.pb.h"
 #include "AOIWorld.h"
 using namespace std;
+extern RandomName random_name;
 //class myPlayer :public Player
 //{
 //public:
@@ -62,7 +63,7 @@ int main()
 	{
 		cout << dynamic_cast<myPlayer*>(single)->name << endl;
 	}*/
-
+	random_name.LoadFile();
 	ZinxKernel::ZinxKernelInit();
 	/*Ìí¼Ó¼àÌýÍ¨µÀ*/
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTCPListen(9999, new GameConnFact())));
