@@ -4,65 +4,37 @@
 #include "AOIWorld.h"
 using namespace std;
 extern RandomName random_name;
-//class myPlayer :public Player
-//{
-//public:
-//	myPlayer(int _x, int _y, std::string _name) :x(_x), y(_y), name(_name) {}
-//	int x;
-//	int y;
-//	std::string name;//easy to Debug
-//	//继承Player中的get函数
-//	//@Override
-//	virtual int GetX() override
-//	{
-//		return x;
-//	}
-//
-//	virtual int GetY() override
-//	{
-//		return y;
-//	}
-//
-//};
 
+//守护进程函数
+void safeguard()
+{
+	int ipid = fork();
+	if (ipid < 0)
+	{
+		exit(-1);
+	}
+	//父进程退出
+	if (ipid > 0)
+	{
+		exit(0);
+	}
+	//子进程设置会话 脱离当前会话组
+	setsid();
+	//重定向守护进程的标准输入 输出 错误 到黑洞设备 使守护进程无法与终端进行IO交互
+	int nullfd = open("/dev/null", O_RDWR);
+	if (nullfd > 0)
+	{
+		dup2(nullfd, 0);
+		dup2(nullfd, 1);
+		dup2(nullfd, 2);
+		close(nullfd);
+	}
+}
 
 
 int main()
 {
-	//pb::SyncPid* pmsg = new pb::SyncPid();
-	//pmsg->set_pid(1);
-	//pmsg->set_username("test");
-
-	//GameMsg gm(GameMsg::MSG_TYPE_LOGIN_ID_NAME, pmsg);
-	//auto output = gm.serialize();
-
-	//for (auto byte : output)
-	//{
-	//	printf("%02X ", byte);
-	//}
-	//puts("");
-
-	//char buff[] = { 0x08, 0x01, 0x12, 0x04 ,0x74, 0x65, 0x73, 0x74 };
-	//std::string input(buff, sizeof(buff));
-
-	//auto ingm = GameMsg(GameMsg::MSG_TYPE_LOGIN_ID_NAME, input);
-	//std::cout << dynamic_cast<pb::SyncPid*> (ingm.pMsg)->pid() << std::endl;
-	//std::cout << dynamic_cast<pb::SyncPid*> (ingm.pMsg)->username() << std::endl;
-
-
-	/*AOIWorld w(20, 200, 50, 230, 6, 6);
-	myPlayer p1(60, 107, "1");
-	myPlayer p2(91, 118, "2");
-	myPlayer p3(147, 133, "3");
-	w.AddPlayer(&p1);
-	w.AddPlayer(&p2);
-	w.AddPlayer(&p3);
-
-	auto srd_list = w.GetSrdPlayers(&p1);
-	for (auto single : srd_list)
-	{
-		cout << dynamic_cast<myPlayer*>(single)->name << endl;
-	}*/
+	safeguard();
 	random_name.LoadFile();
 	ZinxKernel::ZinxKernelInit();
 	/*添加监听通道*/
