@@ -1,12 +1,16 @@
+#pragma once
 #include "RandomName.h"
-static default_random_engine rand_engine(time(NULL));
 
+static default_random_engine rand_engine(time(NULL));
 RandomName::RandomName()
 {
 }
 
 string RandomName::GetName()
 {
+	if (m_pool.empty()) {
+		return "default name";
+	}
 	auto num = rand_engine() % m_pool.size();
 	//ШЁае
 	auto first = m_pool[num]->m_first;
@@ -22,6 +26,17 @@ string RandomName::GetName()
 		delete m_pool[num];
 		m_pool.erase(m_pool.begin() + num);
 	}
+	//std::cout<<"GetName:" << std::endl;
+	//std::cout<<first<< endl;
+	//string ret;
+	//(std::string)first;
+	//ret.append(first);
+	//cout << ret << endl;
+	//ret.append(" ");
+	//cout << ret << endl;
+	//ret.append(last);
+	//cout << ret << endl;
+	//cout << ret << endl;
 	return first + " " + last;
 }
 
@@ -43,7 +58,7 @@ void RandomName::ReleaseName(std::string _name)
 		}
 	}
 
-	if (found = false)
+	if (found == false)
 	{
 		auto first_name = new FirstName();
 		first_name->m_first = first;
@@ -73,6 +88,8 @@ void RandomName::LoadFile()
 		first_name_list->m_first = first_name;
 		first_name_list->m_last_list = temp;
 		m_pool.push_back(first_name_list);
+		std::cout << "LoadFile:" << std::endl;
+		std::cout << first_name<< endl;
 	}
 }
 

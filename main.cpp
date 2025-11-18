@@ -29,6 +29,31 @@ void safeguard()
 		dup2(nullfd, 2);
 		close(nullfd);
 	}
+
+	//进程监控
+	while (1)
+	{
+		int pid = fork();
+		if (pid < 0)
+		{
+			exit(-1);
+		}
+		else if (pid > 0)
+		{
+			int status = 0;
+			wait(&status);
+			if (status == 0)//说明是正常退出
+			{
+				exit(0);
+			}
+		}
+		else
+		{
+			//子进程跳出循环执行游戏业务
+			break;
+		}
+	}
+
 }
 
 
@@ -41,6 +66,6 @@ int main()
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTCPListen(9999, new GameConnFact())));
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTimerChannel()));
 	ZinxKernel::Zinx_Run();
-
 	ZinxKernel::ZinxKernelFini();
+	return 0;
 }

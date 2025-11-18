@@ -4,6 +4,7 @@
 #include"msg.pb.h"
 #include"ZinxTimer.h"
 #include"RandomName.h"
+#include<hiredis/hiredis.h>
 class GameProtocol;
 class GameMsg;
 class GameRole :

@@ -67,10 +67,10 @@ UserData* GameProtocol::raw2request(std::string _szInput)
 		cout << "Debugging-information:" << endl;
 		cout << single->pMsg->Utf8DebugString() << endl;
 	}
-	//pb::Talk* pmsg = new pb::Talk();
-	//pmsg->set_content("hello");
-	//GameMsg* pGameMsg = new GameMsg(GameMsg::MSG_TYPE_CHAT_CONTENT, pmsg);
-	//ZinxKernel::Zinx_SendOut(*(pGameMsg), *this);
+	pb::Talk* pmsg = new pb::Talk();
+	pmsg->set_content("hello");
+	GameMsg* pGameMsg = new GameMsg(GameMsg::MSG_TYPE_CHAT_CONTENT, pmsg);
+	ZinxKernel::Zinx_SendOut(*(pGameMsg), *this);
 
 	return pRet;
 }

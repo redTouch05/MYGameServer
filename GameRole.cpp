@@ -6,6 +6,10 @@
 #include<list>
 #include <random>  // 包含 default_random_engine 和分布类型
 #include <ctime>
+#include<fstream>
+#include<cstring>
+#include<string>
+#include<iostream>
 //创建全局随机姓名对象
 RandomName random_name;
 //创建游戏世界全局对象
@@ -110,21 +114,6 @@ void GameRole::ProcTalkMsg(std::string _content)
 	}
 }
 
-//GameMsg* GameRole::CreateNewPositionBroadCast(pb::Position* NewPos)
-//{
-//	//组建待发送的报文
-//	pb::BroadCast* pMsg = new pb::BroadCast();
-//	auto pPos = pMsg->mutable_p();
-//	pPos->set_x(NewPos->x());
-//	pPos->set_y(NewPos->y());
-//	pPos->set_z(NewPos->z());
-//	pPos->set_v(NewPos->v());
-//	pMsg->set_pid(iPid);
-//	pMsg->set_tp(4);
-//	pMsg->set_username(szName);
-//	GameMsg* msg = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, pMsg);
-//	return msg;
-//}
 
 void GameRole::ProcMoveMsg(float _x, float _y, float _z, float _v)
 {
@@ -211,6 +200,8 @@ GameRole::GameRole()
 {
 	//初始化玩家姓名
 	szName = random_name.GetName();
+	cout <<"GameRole:" << endl;
+	cout << szName << endl;
 	//设置玩家的初始坐标
 	x = 100 + dis_int(gen);
 	z = 100 + dis_int(gen);
@@ -252,6 +243,42 @@ bool GameRole::Init()
 		}
 
 	}
+
+	//以链表的形式存储当前姓名到redis
+	cout << "当前 szName: " << szName << endl;
+	redisContext* c = redisConnect("127.0.0.1", 6379);
+	if (c != NULL) {
+		if (c->err) {
+			cout << "连接Redis失败: " << c->errstr << endl;
+			redisFree(c);
+			return bRet;
+		}
+		// 后续执行命令...
+		redisReply* reply = (redisReply*)redisCommand(c, "lpush game_name %s", szName.c_str());
+		if (reply == NULL) {
+			cout << "命令执行失败: " << c->errstr << endl;
+		}
+		else {
+			// 打印执行结果（可用于调试）
+			cout << "lpush 执行结果: " << reply->str << endl;
+			freeReplyObject(reply);
+		}
+	}
+
+	
+
+
+
+	//string file_path = "/tmp/name_record";
+	//ofstream name_record(file_path, ios::app);
+	//if (!name_record.is_open()) 
+	//{ // 检查文件是否成功打开
+	//	std::cout<< strerror(errno) << endl; // 输出具体错误（需 #include <cstring>）
+	//	return bRet;
+	//}
+	//name_record << szName << endl;
+	//cout << "ofstream: " << endl;
+	//cout << szName << endl;
 
 	return bRet;
 }
@@ -314,6 +341,36 @@ void GameRole::Fini()
 		//启动 退出定时器
 		TimerOutMng::GetInstance().AddTask(&g_exit_timer);
 	}
+
+
+	redisContext* c = redisConnect("127.0.0.1", 6379);
+	if (NULL != c)
+	{
+		freeReplyObject(redisCommand(c, "lrem game_name 1 %s", szName.c_str()));
+		redisFree(c);
+	}
+	else
+	{
+		cout << c->errstr << endl;
+	}
+
+	////1.从文件中读到所有姓名
+	//std::list<string> cur_name_list;
+	//ifstream input_stream("/tmp/name_record");
+	//string tmp;
+	//while (getline(input_stream, tmp))
+	//{
+	//	cur_name_list.push_back(tmp);
+	//}
+	////2.删掉当前姓名 写入其余姓名
+	//ofstream output_stream("/tmp/name_record");
+	//for (auto name : cur_name_list)
+	//{
+	//	if (name != szName)
+	//	{
+	//		output_stream << name << endl;
+	//	}
+	//}
 }
 
 int GameRole::GetX()
