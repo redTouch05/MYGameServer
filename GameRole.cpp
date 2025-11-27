@@ -265,20 +265,6 @@ bool GameRole::Init()
 		}
 	}
 
-	
-
-
-
-	//string file_path = "/tmp/name_record";
-	//ofstream name_record(file_path, ios::app);
-	//if (!name_record.is_open()) 
-	//{ // 检查文件是否成功打开
-	//	std::cout<< strerror(errno) << endl; // 输出具体错误（需 #include <cstring>）
-	//	return bRet;
-	//}
-	//name_record << szName << endl;
-	//cout << "ofstream: " << endl;
-	//cout << szName << endl;
 
 	return bRet;
 }

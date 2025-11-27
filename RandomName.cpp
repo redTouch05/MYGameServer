@@ -70,8 +70,8 @@ void RandomName::ReleaseName(std::string _name)
 
 void RandomName::LoadFile()
 {
-	ifstream first("random_first.txt");
-	ifstream last("random_last.txt");
+	ifstream first("./random_first.txt");
+	ifstream last("./random_last.txt");
 
 	//读取所有名字组成一个线性表
 	string last_name;
