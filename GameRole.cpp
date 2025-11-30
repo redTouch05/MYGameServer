@@ -256,12 +256,10 @@ bool GameRole::Init()
 		// 后续执行命令...
 		redisReply* reply = (redisReply*)redisCommand(c, "lpush game_name %s", szName.c_str());
 		if (reply == NULL) {
-			cout << "命令执行失败: " << c->errstr << endl;
+			cout << "执行LPUSH失败: " << c->errstr << endl;
 		}
 		else {
-			// 打印执行结果（可用于调试）
-			cout << "lpush 执行结果: " << reply->str << endl;
-			freeReplyObject(reply);
+			cout << "LPUSH成功，新列表长度: " << reply->integer << endl;
 		}
 	}
 
@@ -339,24 +337,6 @@ void GameRole::Fini()
 	{
 		cout << c->errstr << endl;
 	}
-
-	////1.从文件中读到所有姓名
-	//std::list<string> cur_name_list;
-	//ifstream input_stream("/tmp/name_record");
-	//string tmp;
-	//while (getline(input_stream, tmp))
-	//{
-	//	cur_name_list.push_back(tmp);
-	//}
-	////2.删掉当前姓名 写入其余姓名
-	//ofstream output_stream("/tmp/name_record");
-	//for (auto name : cur_name_list)
-	//{
-	//	if (name != szName)
-	//	{
-	//		output_stream << name << endl;
-	//	}
-	//}
 }
 
 int GameRole::GetX()

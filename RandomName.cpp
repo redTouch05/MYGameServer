@@ -26,18 +26,16 @@ string RandomName::GetName()
 		delete m_pool[num];
 		m_pool.erase(m_pool.begin() + num);
 	}
-	//std::cout<<"GetName:" << std::endl;
-	//std::cout<<first<< endl;
-	//string ret;
-	//(std::string)first;
-	//ret.append(first);
-	//cout << ret << endl;
-	//ret.append(" ");
-	//cout << ret << endl;
-	//ret.append(last);
-	//cout << ret << endl;
-	//cout << ret << endl;
-	return first + " " + last;
+
+	std::string result = first + " " + last;
+
+	std::cout << "--- GetName Debug ---" << std::endl;
+	std::cout << "First Name: [" << first << "], Length: " << first.size() << std::endl;
+	std::cout << "Last Name:  [" << last << "], Length: " << last.size() << std::endl;
+	std::cout << "Result:     [" << result << "], Length: " << result.size() << std::endl;
+	std::cout << "---------------------" << std::endl;
+
+	return result;
 }
 
 void RandomName::ReleaseName(std::string _name)
@@ -68,6 +66,15 @@ void RandomName::ReleaseName(std::string _name)
 
 }
 
+//在读取文件后，清除掉字符串末尾的 \r 字符
+void remove_cr(std::string& s) {
+	// 检查字符串最后一个字符是否为 '\r'
+	if (!s.empty() && s.back() == '\r') {
+		s.pop_back(); // 移除它
+	}
+}
+
+
 void RandomName::LoadFile()
 {
 	ifstream first("./random_first.txt");
@@ -78,12 +85,14 @@ void RandomName::LoadFile()
 	vector<string> temp;
 	while (getline(last, last_name))
 	{
+		remove_cr(last_name);
 		temp.push_back(last_name);
 	}
 	//读取所有姓 创建姓名池节点 拷贝名字组成的线性表
 	string first_name;
 	while (getline(first, first_name))
 	{
+		remove_cr(first_name);
 		auto first_name_list = new FirstName();
 		first_name_list->m_first = first_name;
 		first_name_list->m_last_list = temp;

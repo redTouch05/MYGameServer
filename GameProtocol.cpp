@@ -30,6 +30,10 @@ UserData* GameProtocol::raw2request(std::string _szInput)
 
 	while (1)
 	{
+		
+	
+
+
 		if (szLast.size() < 8)
 		{
 			break;
@@ -37,21 +41,28 @@ UserData* GameProtocol::raw2request(std::string _szInput)
 
 		/*在前四个字节中读取消息内容长度*/
 		int iLength = 0;
-		iLength |= szLast[0] << 0;
-		iLength |= szLast[1] << 8;
-		iLength |= szLast[2] << 16;
-		iLength |= szLast[3] << 24;
+		iLength |= (int)(unsigned char)szLast[0] << 0;
+		iLength |= (int)(unsigned char)szLast[1] << 8;
+		iLength |= (int)(unsigned char)szLast[2] << 16;
+		iLength |= (int)(unsigned char)szLast[3] << 24;
 		/*中四个字节读类型id*/
 		int id = 0;
-		id |= szLast[4] << 0;
-		id |= szLast[5] << 8;
-		id |= szLast[6] << 16;
-		id |= szLast[7] << 24;
+		id |= (int)(unsigned char)szLast[4] << 0;
+		id |= (int)(unsigned char)szLast[5] << 8;
+		id |= (int)(unsigned char)szLast[6] << 16;
+		id |= (int)(unsigned char)szLast[7] << 24;
+
+		//测试信息输出
+		std::cout << "DEBUG: Raw Input Size: " << _szInput.size() << std::endl;
+		std::cout << "DEBUG: Last Buffer Size: " << szLast.size() << std::endl;
+		std::cout << "DEBUG: Parsed iLength: " << iLength << ", Parsed ID: " << id << std::endl;
+
 
 		/*通过读到的长度判断后续报文是否合法*/
 		if (szLast.size() - 8 < iLength)
 		{
 			/*本条报文还没够，啥都不干*/
+			std::cout << "DEBUG: Breaking, Need " << iLength + 8 << ", Have " << szLast.size() << std::endl;
 			break;
 		}
 
@@ -67,10 +78,11 @@ UserData* GameProtocol::raw2request(std::string _szInput)
 		cout << "Debugging-information:" << endl;
 		cout << single->pMsg->Utf8DebugString() << endl;
 	}
-	pb::Talk* pmsg = new pb::Talk();
-	pmsg->set_content("hello");
-	GameMsg* pGameMsg = new GameMsg(GameMsg::MSG_TYPE_CHAT_CONTENT, pmsg);
-	ZinxKernel::Zinx_SendOut(*(pGameMsg), *this);
+	//启用这段注释会导致不能正常处理客户端连接的bug 只在是测试阶段为了调试使用
+	//pb::Talk* pmsg = new pb::Talk();
+	///*pmsg->set_content("hello");*/
+	//GameMsg* pGameMsg = new GameMsg(GameMsg::MSG_TYPE_CHAT_CONTENT, pmsg);
+	//ZinxKernel::Zinx_SendOut(*(pGameMsg), *this);
 
 	return pRet;
 }

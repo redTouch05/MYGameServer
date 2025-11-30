@@ -10,7 +10,7 @@ list<Player*> AOIWorld::GetSrdPlayers(Player* _Player)
 
 	//计算当前网格横轴数和纵轴数
 	int x_index = grid_id % x_count;
-	int y_index = grid_id / y_count;
+	int y_index = grid_id / x_count;
 
 	//判断具体情况 取出周围网格的玩家们
 	//左上方
@@ -55,7 +55,7 @@ list<Player*> AOIWorld::GetSrdPlayers(Player* _Player)
 	//下方
 	if (y_index < y_count - 1)
 	{
-		list<Player*>& cur_list = m_grids[grid_id + 1].m_players;
+		list<Player*>& cur_list = m_grids[grid_id + x_count].m_players;
 		ret.insert(ret.begin(), cur_list.begin(), cur_list.end());
 	}
 
